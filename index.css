@@ -1,0 +1,75 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+
+    font-size: 16px;
+    font-family: sans-serif;
+
+    outline: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+
+    width: 100vw;
+    height: 100vh;
+}
+
+#controls-container {
+    display: flex;
+    align-items: center;
+
+    height: 50px;
+    min-height: 50px;
+    padding: 16px;
+}
+
+#controls-container label {
+    display: flex;
+    align-items: center;
+
+    margin-right: 24px;
+}
+
+#controls-container label input[type="number"] {
+    width: 75px;
+}
+
+#table-container {
+    flex: 1;
+
+    width: 100%;
+}
+
+table {
+    --cell-size: 0;
+    --border-spacing: 1px;
+
+    border: none;
+    border-spacing: var(--border-spacing);
+
+    background: #4a4a4a;
+}
+
+table td {
+    --state: transparent;
+
+    width: calc(var(--cell-size) - var(--border-spacing));
+    height: calc(var(--cell-size) - var(--border-spacing));
+    margin: 1px;
+
+    border: none;
+    background-color: var(--state);
+
+    transition: opacity .1s, background-color .3s;
+}
+
+table:not(.disabled) td {
+    cursor: pointer;
+}
+
+table:not(.disabled) td:hover {
+    opacity: .5;
+}
