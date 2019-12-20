@@ -16,6 +16,8 @@ const states = {
     informed: '#fff',
 };
 
+const runningButton = document.getElementById('running-button');
+
 const networkSizeInput = document.getElementById('networkSize');
 const networkEffectInput = document.getElementById('networkEffect');
 const weakEffectInput = document.getElementById('weakEffect');
@@ -121,7 +123,11 @@ function setRunningState(isRunning) {
     if (running) {
         restoreGeneration();
         run();
+
+        runningButton.innerText = 'Остановить';
     } else {
+        runningButton.innerText = 'Запустить';
+
         clearTimeout(updateTimeout);
     }
 }
@@ -170,6 +176,10 @@ function init() {
         if (event.code === 'Space') {
             setRunningState(!running);
         }
+    });
+
+    runningButton.addEventListener('click', function () {
+        setRunningState((!running));
     });
 
     table.addEventListener('click', function (event) {
