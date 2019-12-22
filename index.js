@@ -9,7 +9,9 @@ const updateInterval = 750;
 
 let updateTimeout = null;
 let running = false;
+
 const history = [];
+const stats = [];
 
 const states = {
     uninformed: '#222',
@@ -221,7 +223,26 @@ function getNeighboursOf(x, y) {
 }
 
 function saveGeneration() {
-    history.push([...cells]);
+    const newGeneration = [...cells];
+    const prevGeneration = history[history.length - 1] || [];
+    const informingAgents = prevGeneration.filter(s => s === states.informed).length;
+    const totalInformedAgents = newGeneration.filter(s => s === states.informed).length;
+    const totalUninformedAgents = newGeneration.length - totalInformedAgents;
+    const informedAgents = totalInformedAgents - informingAgents;
+
+    stats.push({
+        t: history.length,
+        informingAgents,
+        informedAgents,
+        totalInformedAgents,
+        totalUninformedAgents,
+        networkSize: networkSizeInput.value,
+        networkEffect: networkEffectInput.value,
+        weakEffect: weakEffectInput.value,
+        advertisingEffect: advertisingEffectInput.value,
+        weakCount: weakCountInput.value,
+    });
+    history.push(newGeneration);
 
     generationRangeInput.max = history.length - 1;
     generationRangeInput.value = generationRangeInput.max;
@@ -268,5 +289,73 @@ function run() {
 
     if (running) updateTimeout = setTimeout(run, updateInterval);
 }
+
+function saveFile(rows, name) {
+    const data = rows.map(row => row.join(';') + '\r\n');
+
+    saveAs(new Blob(data, {type: 'text/csv;charset=utf-8'}), name);
+}
+
+function getRowsFromStat(statEntries) {
+    return [
+        [
+            'Шаг',
+            'Кол-во передающих инф-цию', 'Кол-во получивших инф-цию',
+            'Размер сети', 'Кол-во слабых связей',
+            'Влияние сети', 'Влияние слабой связи',
+            'Влияние рекламы',
+        ],
+        ...statEntries.map(entry => [
+            entry.t,
+            entry.informingAgents,
+            entry.informedAgents,
+            entry.networkSize,
+            entry.weakCount,
+            entry.networkEffect,
+            entry.weakEffect,
+            entry.advertisingEffect,
+        ]),
+    ];
+}
+
+const downloadHistoryButton = document.getElementById('download-history-button');
+const downloadStateButton = document.getElementById('download-state-button');
+const downloadResultButton = document.getElementById('download-result-button');
+
+downloadHistoryButton.addEventListener('click', function () {
+    saveFile(getRowsFromStat(stats), 'ca_history.csv');
+});
+
+downloadStateButton.addEventListener('click', function () {
+    const time = getCurrentTime();
+
+    if (!stats[time]) return;
+
+    saveFile(getRowsFromStat([stats[time]]), `ca_state_${time}.csv`);
+});
+
+downloadResultButton.addEventListener('click', function () {
+    const rows = [
+        [
+            'Шаг',
+            'Кол-во проинформированных', 'Кол-во непроинформированных',
+            'Размер сети', 'Кол-во слабых связей',
+            'Влияние сети', 'Влияние слабой связи',
+            'Влияние рекламы',
+        ],
+        ...[stats[0] || [], stats[stats.length - 1] || []].map(entry => [
+            entry.t,
+            entry.totalInformedAgents,
+            entry.totalUninformedAgents,
+            entry.networkSize,
+            entry.weakCount,
+            entry.networkEffect,
+            entry.weakEffect,
+            entry.advertisingEffect,
+        ]),
+    ];
+
+    saveFile(rows, `ca_result.csv`);
+});
 
 init();
