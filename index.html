@@ -22,7 +22,7 @@
         <input type="number" value="20" id="weakCount">
     </label>
     <label>
-        Влияение сети:&nbsp;
+        Влияние сети:&nbsp;
         <input type="number" value="0.01" id="networkEffect">
     </label>
     <label>
@@ -33,12 +33,22 @@
         Влияние рекламы:&nbsp;
         <input type="number" value="0.005" id="advertisingEffect">
     </label>
+    <label>
+        <button type="button" id="download-history-button">Выгрузить историю</button>
+    </label>
+    <label>
+        <button type="button" id="download-state-button">Выгрузить состояние</button>
+    </label>
+    <label>
+        <button type="button" id="download-result-button">Выгрузить итог</button>
+    </label>
 </div>
 
 <div id="table-container">
     <table id="table" cellpadding="0" cellspacing="0"></table>
 </div>
 
+<script src="FileSaver.min.js"></script>
 <script src="index.js"></script>
 </body>
 </html>
